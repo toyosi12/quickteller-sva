@@ -8,33 +8,39 @@ class Helper
     private static $nonce;
     private static $timeStamp;
     private static $signatureMethod = 'SHA1';
-    private static $terminalId = '3DMO0001';
+    public static $terminalId = '3DMO0001';
     
     public static function __constructStatic()
     {
         self::$authorizationString = self::computeAuthorizationString();
-        self::$nonce = self::computeNonce();
         self::$timeStamp = self::computeTimeStamp();
     }
     
     public static function curl($method, $endpoint, $fields = [])
     {
-        if (strtolower($method) === 'get') {
-            $curlInit = curl_init();
-            curl_setopt($curlInit, CURLOPT_URL, $endpoint);
-            curl_setopt($curlInit, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curlInit, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json',
-                'Authorization: ' . self::$authorizationString,
-                'Signature: ' . self::computeSignature($endpoint),
-                'TimeStamp: ' . self::$timeStamp,
-                'Nonce: ' . self::$nonce,
-                'TerminalID: ' . self::$terminalId,
-                'SignatureMethod: ' . self::$signatureMethod
+        self::$nonce = self::computeNonce();
+        $curlInit = curl_init();
+        curl_setopt($curlInit, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            'Authorization: ' . self::$authorizationString,
+            'Signature: ' . self::computeSignature($method, $endpoint),
+            'TimeStamp: ' . self::$timeStamp,
+            'Nonce: ' . self::$nonce,
+            'TerminalID: ' . self::$terminalId,
+            'SignatureMethod: ' . self::$signatureMethod
 
-            ));
-            $response = curl_exec($curlInit);
+        ));
+
+        curl_setopt($curlInit, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curlInit, CURLOPT_URL, $endpoint);
+
+        if (strtoupper($method) === 'POST') {
+            $fieldsString = json_encode($fields);
+            curl_setopt($curlInit, CURLOPT_POST, true);
+            curl_setopt($curlInit, CURLOPT_POSTFIELDS, $fieldsString);
         }
+        
+        $response = curl_exec($curlInit);
         curl_close($curlInit);
         return $response;
     }
@@ -55,16 +61,31 @@ class Helper
         return $nonce;
     }
 
+    /**
+     * This method is deprecated
+     */
+    public static function generateRequestReference($length = 6)
+    {
+        $reference = '';
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+        $charactersLenth = strlen($characters);
+        for ($i = 0; $i < $length; $i++) {
+            $reference .= $characters[rand(0, $charactersLenth - 1)];
+        }
+        return $reference;
+    }
+
     public static function computeAuthorizationString()
     {
         return 'InterswitchAuth ' . base64_encode(self::$clientId);
     }
 
-    public static function computeSignature($endpoint, $method = 'GET')
+    public static function computeSignature($method, $endpoint)
     {
+        $method = strtoupper($method);
         $signature = $method . '&' . urlencode($endpoint) . '&' . self::$timeStamp .
         '&' . self::$nonce . '&' . self::$clientId . '&' . self::$secretKey;
-        $hashedSignature = base64_encode(pack('H*', sha1($signature)));
+        $hashedSignature = base64_encode(sha1($signature, true));
         return $hashedSignature;
     }
 }

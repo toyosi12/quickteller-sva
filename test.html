@@ -189,17 +189,18 @@
           )
         );
       }
-      var httpMethod = "get";
-      //var host = postman.getEnvironmentVariable("host");
-      var url = "https://sandbox.interswitchng.com/api/v2/quickteller/billers";
-      url = url.replace("http://", "https://");
-      //url = url.replace("{{host}}", host);
+      var request = "get";
+      var httpMethod = request.method;
+      var host = "asdfjkl"; //postman.getEnvironmentVariable("host");
+      var url = request;
+      // url = url.replace("http://", "https://");
+      url = url.replace("{{host}}", host);
       url = encodeURIComponent(url);
       var timestamp = timestamp();
       var nonce = guid();
-      var clientId = "IKIA83BDD0B659E353A289D5AD5AD97936608DD75072";
+      var clientId = ""; //postman.getEnvironmentVariable("clientId");
       var authorization = "InterswitchAuth" + " " + b64EncodeUnicode(clientId);
-      var clientSecret = "8q0S5VwkQ0vpWMA4RjEvnsFt5k2";
+      var clientSecret = ""; //postman.getEnvironmentVariable("secretKey");
 
       var signatureCipher =
         httpMethod +
@@ -213,16 +214,7 @@
         clientId +
         "&" +
         clientSecret;
-
-      //   console.log(
-      //     hexToBase64(
-      //       Sha1.hash(
-      //         "get&https%3A%2F%2Fsandbox.interswitchng.com%2Fapi%2Fv2%2Fquickteller%2Fbillers&1623062950&4bc0fb15be2254e61be93c35f7037892&IKIA83BDD0B659E353A289D5AD5AD97936608DD75072&8q0S5VwkQ0vpWMA4RjEvnsFt5k2"
-      //       )
-      //     )
-      //   );
-
-      console.log(b64EncodeUnicode("83f86930aab72c03683b58e74f479fd66b538a9f"));
+      console.log(1453 + "" + timestamp);
     </script>
   </body>
 </html>
