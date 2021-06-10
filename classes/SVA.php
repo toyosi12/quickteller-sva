@@ -45,4 +45,16 @@ class SVA
         $endpoint = 'https://sandbox.interswitchng.com/api/v2/quickteller/transactions?requestreference=' . $requestReference;
         return Helper::curl('GET', $endpoint);
     }
+
+    public static function getBanks()
+    {
+        $endpoint = 'https://sandbox.interswitchng.com/api/v2/quickteller/configuration/fundstransferbanks';
+        return Helper::curl('GET', $endpoint);
+    }
+
+    public static function doTransfer($fields)
+    {
+        $endpoint = 'https://sandbox.interswitchng.com/api/v2/quickteller/payments/transfers';
+        return Helper::curl('POST', $endpoint, $fields);
+    }
 }
