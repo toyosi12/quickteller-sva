@@ -1,16 +1,15 @@
+const https = require('https');
+const crypto = require('crypto');
+
 const clientId = 'IKIA83BDD0B659E353A289D5AD5AD97936608DD75072';
 const secretKey = '8q0S5VwkQ0vpWMA4RjEvnsFt5k2+EtzQ1fDb3WOE/48=';
-let authorizationString;
-let nonce;
-let timeStamp;
 const signatureMethod = 'SHA1';
 const terminalId = '3DMO0001';
 
-const https = require('https');
-
-
+let authorizationString;
+let nonce;
+let timeStamp;
 let hostname = 'sandbox.interswitchng.com';
-let crypto = require('crypto');
 
 authorizationString = computeAuthorizationString();
 timeStamp = computeTimeStamp();
